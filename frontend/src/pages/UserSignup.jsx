@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useContext} from 'react'
 import uberLogo from '../assets/uberLogo.png';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import {UserDataContext} from '../context/UserContext';
 
 const UserSignup = () => {
 
@@ -8,20 +10,48 @@ const UserSignup = () => {
     const [password,setPassword] = useState('')
     const [firstname,setFirstName] = useState('')
     const [lastname,setLastName] = useState('')
-    // eslint-disable-next-line no-unused-vars
-    const [userData,setUserData] = useState({})
 
-    const submitHandler = (e) =>{
+    // eslint-disable-next-line no-unused-vars
+    const [ userData, setUserData ] = useState({})
+
+
+    const navigate = useNavigate()
+    // eslint-disable-next-line no-unused-vars
+    const { user, setUser } = useContext(UserDataContext);
+
+    const submitHandler = async (e) =>{
         e.preventDefault();
 
-        setUserData({
+        const newUser = {
             fullname:{
                 firstname:firstname,
                 lastname:lastname,
             },
             email:email,
             password:password
-        })
+        }
+        // console.log(newUser);
+        
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, newUser);
+            
+            // console.log('Response:', response); // Log response
+        
+            if (response.status === 200 || response.status === 201) {  // Accept both 200 & 201
+                const data = response.data;
+                // console.log('User Data:', data.user); // Log user data
+                setUser(data.user);
+                localStorage.setItem('token', data.token);
+                // console.log('Navigating to home...');
+                navigate('/home');  // Ensure this executes
+            } else {
+                console.log('Unexpected Response:', response);
+            }
+        } catch (error) {
+            console.error('Backend Error:', error.response?.data || error.message);
+        }
+        
+
         setFirstName('')
         setLastName('')
         setEmail('')
@@ -42,7 +72,7 @@ const UserSignup = () => {
                 <input required value={email} onChange={(e)=>{setEmail(e.target.value)}} className='bg-[#eeeeee] mb-5 rounded px-4 py-2 border w-full text-lg placeholder:text-sm' type="email" placeholder='email@example.com'/>
                 <h3 className='text-lg font-base mb-2'>Enter Password</h3>
                 <input required value={password} onChange={(e)=>{setPassword(e.target.value)}} className='bg-[#eeeeee] mb-5 rounded px-4 py-2 border w-full text-lg placeholder:text-sm' type="password" placeholder='password'/>
-                <button className='bg-[#111] text-white font-semibold mb-3 rounded px-4 py-2 w-full text-lg'>SignUp</button>
+                <button className='bg-[#111] text-white font-semibold mb-3 rounded px-4 py-2 w-full text-lg'>Create Account</button>
             </form>
             <Link to='/UserLogin' className='text-center text-[#10b461]'>Already have a account? Login here</Link>
         </div>

@@ -1,6 +1,10 @@
-import React, { useState } from 'react'
+/* eslint-disable no-unused-vars */
+import React, { useState, useContext } from 'react'
 import uberLogo from '../assets/uberLogo.png';
 import { Link } from 'react-router-dom';
+import { UserDataContext } from '../context/UserContext';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const UserLogin = () => {
 
@@ -9,13 +13,36 @@ const UserLogin = () => {
     // eslint-disable-next-line no-unused-vars
     const [userData,setUserData] = useState({})
 
-    const submitHandler = (e) =>{
+    const { user, setUser } = useContext(UserDataContext);
+    const navigate = useNavigate();
+
+    const submitHandler = async (e) =>{
         e.preventDefault();
 
-        setUserData({
+        const userData = {
             email:email,
-            password:password
-        })
+            password: password
+        }
+
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, userData);
+            
+            // console.log('Response:', response); // Log response
+        
+            if (response.status === 200 || response.status === 201) {  // Accept both 200 & 201
+                const data = response.data;
+                // console.log('User Data:', data.user); // Log user data
+                setUser(data.user);
+                localStorage.setItem('token', data.token);
+                // console.log('Navigating to home...');
+                navigate('/home');  // Ensure this executes
+            } else {
+                console.log('Unexpected Response:', response);
+            }
+        } catch (error) {
+            console.error('Backend Error:', error.response?.data || error.message);
+        }
+
         setEmail('')
         setPassword('')
     }
