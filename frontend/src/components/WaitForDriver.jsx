@@ -8,6 +8,24 @@ const WaitForDriver = (props) => {
 
     const [message, setMessage] = useState("");
 
+    const data = [
+        {
+          icon: "ri-map-pin-range-fill",
+          heading: "562/11-A",
+          description: "kaikondrahalli, Bengaluru, Karnataka"
+        },
+        {
+          icon: "ri-square-fill",
+          heading: "Third Wave Coffee",
+          description: "17th Cross Rd, PWD Quaters, 1st Sector, HRS Layout, Bengaluru, Karnataka"
+        },
+        {
+          icon: "ri-wallet-2-fill",
+          heading: "₹193.20",
+          description: "Cash Cash"
+        }
+      ];
+
   return (
     <div>
         <h5 onClick={()=>{props.setWaitingForDriver(false)}} className='absolute top-3 right-6 text-3xl'><i className="ri-arrow-down-wide-line"></i></h5>
@@ -66,7 +84,22 @@ const WaitForDriver = (props) => {
             </div>
         </div>
 
-        <hr className="border-t-2 border-gray-300 mt-3" />
+        <hr className="border-t-2 border-gray-300 mt-6" />
+
+        <div className='w-full px-5 pt-5'>
+            {data.map((elem, idx) => (
+              <div key={idx} className='flex gap-4 mb-4'>
+                <div className='text-xl flex items-center justify-center'>
+                  <i className={elem.icon}></i>
+                </div>
+                <div>
+                  <h4 className='font-semibold text-xl'>{elem.heading}</h4>
+                  <p className='text-sm'>{elem.description}</p>
+                </div>
+              </div>
+            ))}
+
+        </div>
         
     </div>
   )
